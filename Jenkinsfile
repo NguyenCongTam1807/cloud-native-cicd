@@ -16,7 +16,7 @@ pipeline {
                 script{
                     def workspaceDir = pwd()
                     bat "docker build -t cloud-native ${workspaceDir}"
-                    bat "docker tag cloud_native nctam1807/cloud-native"
+                    bat "docker tag cloud-native nctam1807/cloud-native"
                 }
             }
         }
