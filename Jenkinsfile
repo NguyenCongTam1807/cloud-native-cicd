@@ -15,7 +15,6 @@ pipeline {
             steps {
                 script{
                     def workspaceDir = pwd()
-                    bat 'mvn clean package'
                     bat "docker build -t cloud-native ${workspaceDir}"
                     bat "docker tag cloud_native nctam1807/cloud-native"
                 }
