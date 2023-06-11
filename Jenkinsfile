@@ -1,27 +1,34 @@
 pipeline {
     agent any
-
+    tools {
+        maven 'Maven 3.9.2'
+    }
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/NguyenCongTam1807/cloud-native-cicd']])
+                                bat 'mvn clean install'
             }
         }
 
         stage('Build') {
             steps {
-                def workspaceDir = pwd()
-                bat 'mvn clean package'
-                bat "docker build -t cloud-native ${workspaceDir}"
-                bat "docker tag cloud_native nctam1807/cloud-native"
+                script{
+                    def workspaceDir = pwd()
+                    bat 'mvn clean package'
+                    bat "docker build -t cloud-native ${workspaceDir}"
+                    bat "docker tag cloud_native nctam1807/cloud-native"
+                }
             }
         }
 
         stage('Publish') {
             steps {
-                withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'password')]) {
-                    bat "docker login -u nctam1807 -p $password"
-                    bat "docker push nctam1807/cloud-native"
+                script {
+                    withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'password')]) {
+                        bat "docker login -u nctam1807 -p $password"
+                        bat "docker push nctam1807/cloud-native"
+                    }
                 }
             }
         }
